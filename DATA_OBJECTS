@@ -1,0 +1,83 @@
+CLASS zcl_7184_data_objects DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+ENDCLASS.
+
+
+
+CLASS zcl_7184_data_objects IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( `=== Example 1: Local Types ===` ).
+
+*   Comment/Uncomment ONE of the following lines to change MY_TYPE
+* TYPES my_type TYPE p LENGTH 3 DECIMALS 2.
+  TYPES my_type TYPE i.
+
+*   TYPES my_type TYPE string.
+*   TYPES my_type TYPE n LENGTH 10.
+
+    DATA my_variable TYPE my_type.
+
+    out->write( `my_variable initial (TYPE MY_TYPE):` ).
+    out->write( my_variable ).
+
+    my_variable = '12.34'.
+    out->write( `my_variable after assignment '12.34':` ).
+    out->write( my_variable ).
+    out->write( `---------` ).
+
+    CLEAR my_variable.
+    out->write( `my_variable after CLEAR:` ).
+    out->write( my_variable ).
+    out->write( `---------` ).
+
+
+
+    out->write( `=== Example 2: Global Types ===` ).
+
+    DATA airport TYPE /dmo/airport_id VALUE 'FRA'.
+    out->write( `airport (TYPE /DMO/AIRPORT_ID):` ).
+    out->write( airport ).
+    out->write( `---------` ).
+
+
+
+    out->write( `=== Example 3: Constants ===` ).
+
+    CONSTANTS c_text   TYPE string VALUE `Hello World`.
+    CONSTANTS c_number TYPE i      VALUE 12345.
+
+    out->write( `c_text (TYPE STRING):` ).
+    out->write( c_text ).
+    out->write( `---------` ).
+
+    out->write( `c_number (TYPE I):` ).
+    out->write( c_number ).
+    out->write( `---------` ).
+
+
+
+    out->write( `=== Example 4: Literals ===` ).
+
+    out->write( '12345               ' ).   " Text literal (Type C)
+    out->write( `12345               ` ).   " String literal (Type STRING)
+    out->write( 12345 ).                    " Number literal (Type I)
+    out->write( `---------` ).
+
+
+
+    out->write( `=== Controlled Conversion (CONV) ===` ).
+
+    DATA(i_from_text) = CONV i( '123' ).
+    out->write( `CONV i from '123':` ).
+    out->write( i_from_text ).
+
+  ENDMETHOD.
+
+ENDCLASS.
