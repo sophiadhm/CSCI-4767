@@ -1,0 +1,73 @@
+CLASS zcl_##_solution DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+    " ✅ FIXED: use string instead of fixed length
+    TYPES t_output TYPE string.
+
+    TYPES tt_output TYPE STANDARD TABLE OF t_output WITH EMPTY KEY.
+
+ENDCLASS.
+
+
+
+CLASS zcl_##_solution IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA lt_output TYPE tt_output.
+
+    " Example usage (your existing logic stays here)
+    APPEND 'Program executed successfully' TO lt_output.
+
+    LOOP AT lt_output INTO DATA(ls_line).
+      out->write( ls_line ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+
+"---------------------------------------------------
+" Cargo flight class (where your main bug was)
+"---------------------------------------------------
+
+CLASS lcl_cargo_flight DEFINITION.
+
+  PUBLIC SECTION.
+
+    METHODS get_details
+      IMPORTING
+        i_carrier_id    TYPE /dmo/carrier_id
+        i_connection_id TYPE /dmo/connection_id.
+
+  PRIVATE SECTION.
+
+    " FIXED TYPES (THIS WAS SWAPPED BEFORE)
+    DATA carrier_id    TYPE /dmo/carrier_id    READ-ONLY.
+    DATA connection_id TYPE /dmo/connection_id READ-ONLY.
+
+ENDCLASS.
+
+
+
+CLASS lcl_cargo_flight IMPLEMENTATION.
+
+  METHOD get_details.
+
+    "  FINAL CLEAN ASSIGNMENT (NO EXACT)
+    carrier_id    = i_carrier_id.
+    connection_id = i_connection_id.
+
+  ENDMETHOD.
+
+ENDCLASS.
