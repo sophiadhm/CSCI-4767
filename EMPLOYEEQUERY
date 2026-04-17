@@ -1,0 +1,31 @@
+SELECT
+  FROM Z##_C_EmployeeQuery
+FIELDS employeeid,
+       firstname,
+       lastname,
+       departmentid,
+       departmentdescription,
+       assistantname,
+       \_department\_head-lastname AS headname
+INTO TABLE @DATA(result).
+
+out->write(
+  data = result
+  name = 'Selection result'
+).
+
+@EndUserText.label: 'Employee Query'
+define view entity Z##_C_EmployeeQuery
+  as select from Z##_R_Employee
+{
+  key EmployeeId,
+      FirstName,
+      LastName,
+      DepartmentID,
+
+      _Department.Description                as DepartmentDescription,
+      _Department._Assistant.LastName       as AssistantName,
+
+      /* Associations */
+      _Department
+}
