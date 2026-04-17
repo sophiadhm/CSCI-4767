@@ -1,0 +1,96 @@
+CLASS zcl_solution DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+    INTERFACES if_oo_adt_classrun.
+
+  PRIVATE SECTION.
+
+    CONSTANTS c_carrier_id TYPE /dmo/carrier_id VALUE 'LH'.
+
+    CLASS lcl_carrier DEFINITION.
+      PUBLIC SECTION.
+        METHODS constructor
+          IMPORTING
+            i_carrier_id TYPE /dmo/carrier_id
+          RAISING
+            cx_abap_invalid_value
+            cx_abap_auth_check_exception.
+
+        METHODS get_output
+          RETURNING VALUE(r_output) TYPE string.
+
+      PRIVATE SECTION.
+        DATA name TYPE string.
+        DATA currency_code TYPE /dmo/currency_code.
+    ENDCLASS.
+
+ENDCLASS.
+
+
+
+CLASS zcl_solution IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    TRY.
+        DATA(carrier) = NEW lcl_carrier( i_carrier_id = c_carrier_id ).
+
+        out->write(
+          name = 'Carrier Overview'
+          data = carrier->get_output( )
+        ).
+
+      CATCH cx_abap_invalid_value.
+        out->write( |Carrier { c_carrier_id } does not exist| ).
+
+      CATCH cx_abap_auth_check_exception.
+        out->write( |No authorization to display carrier { c_carrier_id }| ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+
+
+  CLASS lcl_carrier IMPLEMENTATION.
+
+    METHOD constructor.
+
+      " Read from DB table
+      SELECT SINGLE
+        FROM /lrn/carrier
+        FIELDS concat_with_space( carrier_id, name, 1 ), currency_code
+        WHERE carrier_id = @i_carrier_id
+        INTO ( @me->name, @me->currency_code ).
+
+      " Check if carrier exists
+      IF sy-subrc <> 0.
+        RAISE EXCEPTION TYPE cx_abap_invalid_value.
+      ENDIF.
+
+      " Authorization check
+      AUTHORITY-CHECK
+        OBJECT '/LRN/CARR'
+          ID '/LRN/CARR' FIELD i_carrier_id
+          ID 'ACTVT'     FIELD '03'.
+
+      IF sy-subrc <> 0.
+        RAISE EXCEPTION TYPE cx_abap_auth_check_exception.
+      ENDIF.
+
+    ENDMETHOD.
+
+
+
+    METHOD get_output.
+
+      r_output = |Carrier: { name }, Currency: { currency_code }|.
+
+    ENDMETHOD.
+
+  ENDCLASS.
+
+ENDCLASS.
