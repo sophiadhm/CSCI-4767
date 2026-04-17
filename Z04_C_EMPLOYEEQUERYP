@@ -1,0 +1,42 @@
+@EndUserText.label: 'Employee Query with Parameters'
+define view entity Z##_C_EmployeeQueryP
+  with parameters 
+    p_target_curr : /dmo/currency_code,
+    @EndUserText.label: 'Date of evaluation'
+    @Environment.systemField: #SYSTEM_DATE
+    p_date        : abap.dats
+  as select from Z##_R_Employee
+{
+  key EmployeeId,
+      FirstName,
+      LastName,
+      DepartmentID,
+
+      _Department.Description          as DepartmentDescription,
+      _Department._Assistant.LastName  as AssistantName,
+
+      @EndUserText.label: 'Annual Salary'
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      currency_conversion(
+        amount             => AnnualSalary,
+        source_currency    => CurrencyCode,
+        target_currency    => $parameters.p_target_curr,
+        exchange_rate_date => $parameters.p_date
+      ) as AnnualSalaryConverted,
+
+      @EndUserText.label: 'Monthly Salary'
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      cast( $projection.AnnualSalaryConverted as abap.fltp ) / 12.0
+        as MonthlySalaryConverted,
+
+      $parameters.p_target_curr as CurrencyCode,
+
+      division(
+        dats_days_between( EntryDate, $parameters.p_date ),
+        365,
+        1
+      ) as CompanyAffiliation,
+
+      /* Associations */
+      _Department
+}
