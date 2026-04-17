@@ -1,0 +1,11 @@
+* Task 2
+***********************************************************
+*    DATA person TYPE st_person.
+    DATA person TYPE z##s_person.
+
+    person-name-first_name     = 'Dictionary'.
+    person-name-last_name      = 'ABAP'.
+    person-address-street      = 'Dietmar-Hopp-Allee 16'.
+    person-address-postal_code = '69190'.
+    person-address-city        = 'Walldorf'.
+    person-address-country     = 'DE'.
