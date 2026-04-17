@@ -1,0 +1,48 @@
+"! Flight Carrier -
+"! A factory logic ensures that there can only be one instance for each carrier ID.
+CLASS lcl_carrier DEFINITION CREATE PRIVATE.
+
+  PUBLIC SECTION.
+
+    "! Factory method - returns an instance of this class.
+    "! @parameter i_carrier_id | Three-character identification of the carrier.
+    "! @parameter r_result | Reference to the instance - initial if instantiation failed.
+    "! @raising cx_abap_invalid_value | Instantiation failed - invalid carrier ID.
+    "! @raising cx_abap_auth_check_exception | Instantiation failed - no authorization.
+    CLASS-METHODS get_instance
+      IMPORTING
+        i_carrier_id TYPE /dmo/carrier_id
+      RETURNING
+        VALUE(r_result) TYPE REF TO lcl_carrier
+      RAISING
+        cx_abap_invalid_value
+        cx_abap_auth_check_exception.
+
+ENDCLASS.
+
+
+
+"! Abstract superclass for classes 
+"! {@link .lcl_passenger_flight} and 
+"! {@link .lcl_cargo_flight} <br/>
+"! Every instance is uniquely identified by attributes
+"! {@link .lcl_flight.DATA:carrier_id},
+"! {@link .lcl_flight.DATA:connection_id}, and
+"! {@link .lcl_flight.DATA:flight_date}.
+CLASS lcl_flight DEFINITION ABSTRACT.
+ENDCLASS.
+
+
+
+"! Search for a <strong>passenger flight</strong> between two airports that
+"! <ul>
+"! <li>lies on or after a given date and</li>
+"! <li>has a minimum number of available seats left</li>
+"! </ul>
+"! @parameter i_airport_from_id | <em>Departure</em> airport
+"! @parameter i_airport_to_id | <em>Arrival</em> airport
+"! @parameter i_from_date | First possible flight date
+"! @parameter i_seats | Minimum number of available seats
+"! @parameter e_flight | Found flight (object reference)
+"! @parameter e_days_later | Number of days after the requested date
+METHODS find_passenger_flight.
