@@ -1,0 +1,32 @@
+define role Z##_R_DEPARTMENT 
+{
+  grant select on Z##_R_Department
+  where ( Id ) 
+      = aspect pfcg_auth(
+          /LRN/DPMNT, 
+          /LRN/DPMNT, 
+          ACTVT = '03'
+        );
+}
+define role Z##_R_EMPLOYEE 
+{
+  grant select on Z##_R_Employee
+  where ( DepartmentId ) 
+      = aspect pfcg_auth(
+          /LRN/DPMNT, 
+          /LRN/DPMNT, 
+          ACTVT = '03'
+        );
+}
+define role Z##_C_EMPLOYEEQUERYP 
+{
+  grant select on Z##_C_EmployeeQueryP
+  where inheriting conditions 
+    from entity Z##_R_Employee;
+}
+define role Z##_C_DEPARTMENTQUERY 
+{
+  grant select on Z##_C_DepartmentQuery
+  where inheriting conditions 
+    from entity Z##_R_Department;
+}
